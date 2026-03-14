@@ -1,49 +1,64 @@
-# Claude Code Sample Hook
+# Claude Code Samples
 
-This repository includes an experimental Claude Code `Stop` hook that attempts
-to clear the active session whenever Claude finishes responding.
+This repository now includes two Claude Code experiments:
+
+- an active Rostrum `hello-world` sample playbook
+- the older, disabled `clear-on-stop` TTY injection experiment
 
 Files:
 
 - `.claude/settings.json`
+- `.claude/commands/rostrum-hello-world.md`
+- `.claude/agents/rostrum-hello-moon.md`
+- `.claude/bin/rostrum-hello-world-state.sh`
+- `.claude/hooks/rostrum-hello-world-stop.sh`
 - `.claude/hooks/clear-on-stop.sh`
+- `.claude/hooks/clear-on-stop.log`
 
-## Important caveat
+## Rostrum hello-world sample
 
-This is not using a documented Claude Code API for clearing the current
-session. Anthropic's hook documentation describes hooks as shell commands that
-communicate through stdin, stdout, stderr, and exit codes, and explicitly says
-command hooks cannot directly trigger commands or tool calls.
+The active sample demonstrates a two-phase Rostrum-style playbook using:
 
-Because of that limitation, this sample uses terminal input injection to push
-`/clear` into the current TTY after a `Stop` event.
+- a user-invoked command: `/rostrum-hello-world`
+- a hidden internal subagent: `rostrum-hello-moon`
+- a local state file in `.claude/state/rostrum-hello-world.json`
+- `Stop` and `SubagentStop` hooks that block until phase two finishes
 
-## Expected behavior
+Expected flow:
 
-Best case:
+1. The user runs `/rostrum-hello-world`.
+2. Claude creates `hello_world.md` and advances the local state to `hello_moon`.
+3. Claude tries to stop.
+4. The stop hook blocks and instructs Claude to delegate to the
+   `rostrum-hello-moon` subagent.
+5. The subagent creates `hello_moon.md`, marks the state complete, and returns.
+6. The next stop is allowed because the playbook is finished.
 
-1. Claude finishes responding.
-2. The `Stop` hook fires.
-3. The hook injects `/clear` into the active terminal.
-4. Claude clears the conversation context.
+The generated files are ignored by git:
 
-## Known limitations
+- `hello_world.md`
+- `hello_moon.md`
 
-- It is local-terminal-only.
-- It depends on `python3`.
-- It works best when the Claude CLI is attached to a traditional TTY.
-- It may not work in all terminals, OS versions, or sandboxed environments.
-- It is not expected to work reliably in browser, remote-control, or IDE panel
-  surfaces.
-- It is intentionally hacky and should not be treated as a production adapter
-  contract.
+## Clear-on-stop experiment
 
-## Disable it
+`clear-on-stop.sh` is still in the repo as a failed experiment. It tries to
+inject `/clear` into the active terminal when Claude stops. In this environment
+the hook process did not have a controlling TTY, so it could not work
+reliably.
 
-Set `ROSTRUM_DISABLE_CLAUDE_STOP_CLEAR=1` in the environment before starting
-Claude Code, or remove the `Stop` hook from `.claude/settings.json`.
+That script is no longer wired into `.claude/settings.json`.
+
+## Testing the sample
+
+1. Start Claude Code in this repository.
+2. Run `/rostrum-hello-world`.
+3. Confirm that `hello_world.md` appears first.
+4. Confirm that Claude continues into the hidden `rostrum-hello-moon` phase.
+5. Confirm that `hello_moon.md` appears and the final stop is allowed.
 
 ## Relevant Claude docs
 
 - Hooks guide: https://docs.anthropic.com/en/docs/claude-code/hooks-guide
 - Hooks reference: https://docs.anthropic.com/en/docs/claude-code/hooks
+- Slash commands: https://docs.anthropic.com/en/docs/claude-code/slash-commands
+- Subagents: https://docs.anthropic.com/en/docs/claude-code/sub-agents

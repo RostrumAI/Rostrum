@@ -1,0 +1,4 @@
+.claude/hooks/*.log
+.claude/state/
+hello_world.md
+hello_moon.md

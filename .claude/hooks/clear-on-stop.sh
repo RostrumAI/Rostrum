@@ -11,6 +11,13 @@ set -euo pipefail
 # work reliably in remote, GUI, or browser-backed Claude Code surfaces.
 
 INPUT="$(cat)"
+LOG_FILE="${CLAUDE_PROJECT_DIR:-$(pwd)}/.claude/hooks/clear-on-stop.log"
+
+log() {
+  local message="$1"
+  mkdir -p "$(dirname "$LOG_FILE")"
+  printf '%s %s\n' "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "$message" >> "$LOG_FILE"
+}
 
 if command -v jq >/dev/null 2>&1; then
   STOP_HOOK_ACTIVE="$(printf '%s' "$INPUT" | jq -r '.stop_hook_active // false')"
@@ -22,15 +29,18 @@ fi
 
 # Claude documents this guard to avoid Stop-hook loops.
 if [[ "$STOP_HOOK_ACTIVE" == "true" ]]; then
+  log "session=$SESSION_ID event=skip reason=stop_hook_active"
   exit 0
 fi
 
 if [[ "${ROSTRUM_DISABLE_CLAUDE_STOP_CLEAR:-0}" == "1" ]]; then
+  log "session=$SESSION_ID event=skip reason=env_disabled"
   exit 0
 fi
 
 TTY_PATH="$(tty 2>/dev/null || true)"
 if [[ -z "$TTY_PATH" || "$TTY_PATH" == "not a tty" ]]; then
+  log "session=$SESSION_ID event=skip reason=no_tty"
   echo "clear-on-stop: no controlling tty for session $SESSION_ID" >&2
   exit 0
 fi
@@ -48,12 +58,14 @@ if [[ -f "$STAMP_FILE" ]]; then
 fi
 
 if [[ "$LAST_RUN" =~ ^[0-9]+$ ]] && (( NOW - LAST_RUN < 2 )); then
+  log "session=$SESSION_ID event=skip reason=debounced tty=$TTY_PATH"
   exit 0
 fi
 
 printf '%s' "$NOW" > "$STAMP_FILE"
+log "session=$SESSION_ID event=inject_start tty=$TTY_PATH"
 
-python3 - "$TTY_PATH" "/clear"$'\n' <<'PY'
+if python3 - "$TTY_PATH" "/clear"$'\n' <<'PY'
 import fcntl
 import os
 import sys
@@ -86,3 +98,8 @@ try:
 finally:
     os.close(fd)
 PY
+then
+  log "session=$SESSION_ID event=inject_done tty=$TTY_PATH"
+else
+  log "session=$SESSION_ID event=inject_failed tty=$TTY_PATH"
+fi
