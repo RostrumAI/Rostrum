@@ -1,4 +1,6 @@
 .claude/hooks/*.log
 .claude/state/
+.claude/skills/rostrum-hello-world-phase/hello_world.md
+.claude/skills/rostrum-hello-moon-phase/hello_moon.md
 hello_world.md
 hello_moon.md

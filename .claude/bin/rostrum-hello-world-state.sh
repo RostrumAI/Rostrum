@@ -7,6 +7,8 @@ STATE_DIR="$PROJECT_DIR/.claude/state"
 STATE_FILE="$STATE_DIR/rostrum-hello-world.json"
 HELLO_WORLD_FILE="$PROJECT_DIR/hello_world.md"
 HELLO_MOON_FILE="$PROJECT_DIR/hello_moon.md"
+SKILL_LOCAL_HELLO_WORLD_FILE="$PROJECT_DIR/.claude/skills/rostrum-hello-world-phase/hello_world.md"
+SKILL_LOCAL_HELLO_MOON_FILE="$PROJECT_DIR/.claude/skills/rostrum-hello-moon-phase/hello_moon.md"
 
 command="${1:-status}"
 next_phase="${2:-}"
@@ -38,7 +40,8 @@ PY
 
 case "$command" in
   prepare)
-    rm -f "$HELLO_WORLD_FILE" "$HELLO_MOON_FILE" "$STATE_FILE"
+    rm -f "$HELLO_WORLD_FILE" "$HELLO_MOON_FILE" "$STATE_FILE" \
+      "$SKILL_LOCAL_HELLO_WORLD_FILE" "$SKILL_LOCAL_HELLO_MOON_FILE"
     ;;
   start)
     write_state "active" "hello_world"

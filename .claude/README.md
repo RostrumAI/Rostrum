@@ -10,7 +10,7 @@ Files:
 - `.claude/settings.json`
 - `.claude/skills/rostrum-hello-world/SKILL.md`
 - `.claude/skills/rostrum-hello-world-phase/SKILL.md`
-- `.claude/skills/rostrum-hello-moon/SKILL.md`
+- `.claude/skills/rostrum-hello-moon-phase/SKILL.md`
 - `.claude/bin/rostrum-hello-world-state.sh`
 - `.claude/hooks/rostrum-hello-world-prompt-submit.sh`
 - `.claude/hooks/rostrum-hello-world-stop.sh`
@@ -23,7 +23,7 @@ The active sample demonstrates a two-phase Rostrum-style playbook using:
 
 - a user-invoked skill: `/rostrum-hello-world`
 - a hidden Claude-only phase-one writer: `rostrum-hello-world-phase`
-- a hidden Claude-only skill: `rostrum-hello-moon`
+- a hidden Claude-only skill: `rostrum-hello-moon-phase`
 - a local state file in `.claude/state/rostrum-hello-world.json`
 - a `UserPromptSubmit` hook that injects resume instructions when the playbook is waiting on the user's content
 - `Stop` and `SubagentStop` hooks that block until phase two finishes
@@ -35,10 +35,10 @@ Expected flow:
 2. The skill resets stale sample artifacts, starts the local state machine,
    moves the playbook into `awaiting_user hello_world`, and asks the user what to write.
 3. When the user replies, the `UserPromptSubmit` hook injects resume context so Claude knows the prompt text is exact file content for `hello_world.md`.
-4. Claude invokes the hidden `rostrum-hello-world-phase` skill, writes `hello_world.md`, advances to `hello_moon`, and invokes the hidden `rostrum-hello-moon` skill.
+4. Claude invokes the hidden `rostrum-hello-world-phase` skill, writes `hello_world.md`, advances to `hello_moon`, and invokes the hidden `rostrum-hello-moon-phase` skill.
 5. The hidden moon skill moves the playbook into `awaiting_user hello_moon` and asks the user what to write.
 6. When the user replies again, the `UserPromptSubmit` hook injects resume context for `hello_moon.md`.
-7. Claude invokes the hidden `rostrum-hello-moon` skill again, writes `hello_moon.md`, and marks the playbook complete.
+7. Claude invokes the hidden `rostrum-hello-moon-phase` skill again, writes `hello_moon.md`, and marks the playbook complete.
 8. If Claude tries to stop during an active phase, the stop hook blocks. If the playbook is waiting on the user, stopping is allowed.
 
 The generated files are ignored by git:

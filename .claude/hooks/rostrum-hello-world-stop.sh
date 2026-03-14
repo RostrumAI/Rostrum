@@ -82,14 +82,14 @@ case "$PHASE" in
       exit 0
     fi
 
-    block 'The Rostrum hello-world sample is not done yet. Advance into `hello_moon` and invoke the hidden `rostrum-hello-moon` skill before stopping.'
+    block 'The Rostrum hello-world sample is not done yet. Advance into `hello_moon` and invoke the hidden `rostrum-hello-moon-phase` skill before stopping.'
     ;;
   hello_moon)
     if [[ ! -f "$HELLO_MOON_FILE" ]]; then
-      block 'The Rostrum hello-world sample is waiting on phase two. Invoke the hidden `rostrum-hello-moon` skill now so it can request or write hello_moon.md and then finish the playbook.'
+      block 'The Rostrum hello-world sample is waiting on phase two. Invoke the hidden `rostrum-hello-moon-phase` skill now so it can request or write hello_moon.md and then finish the playbook.'
       exit 0
     fi
 
-    block 'hello_moon.md exists, but the playbook has not been marked complete yet. Re-run the hidden `rostrum-hello-moon` skill or run `.claude/bin/rostrum-hello-world-state.sh finish` if phase two already completed successfully.'
+    block 'hello_moon.md exists, but the playbook has not been marked complete yet. Re-run the hidden `rostrum-hello-moon-phase` skill or run `.claude/bin/rostrum-hello-world-state.sh finish` if phase two already completed successfully.'
     ;;
 esac

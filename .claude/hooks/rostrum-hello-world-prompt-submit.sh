@@ -78,9 +78,9 @@ fi
 
 case "$PHASE" in
   hello_world)
-    emit_context 'Rostrum hello-world is waiting for user-provided file content. Treat the user'"'"'s just-submitted prompt as the exact Markdown content for hello_world.md. Invoke the hidden `rostrum-hello-world-phase` skill in forked context, write the content exactly without adding framing, then advance the playbook into the hello_moon phase.'
+    emit_context 'Rostrum hello-world is waiting for user-provided file content. Treat the user'"'"'s just-submitted prompt as the exact Markdown content for $CLAUDE_PROJECT_DIR/hello_world.md. Invoke the hidden `rostrum-hello-world-phase` skill in forked context, write the content exactly without adding framing, then advance the playbook into the hello_moon phase.'
     ;;
   hello_moon)
-    emit_context 'Rostrum hello-world is waiting for user-provided file content. Treat the user'"'"'s just-submitted prompt as the exact Markdown content for hello_moon.md. Invoke the hidden `rostrum-hello-moon` skill in forked context, write the content exactly without adding framing, then finish the playbook.'
+    emit_context 'Rostrum hello-world is waiting for user-provided file content. Treat the user'"'"'s just-submitted prompt as the exact Markdown content for $CLAUDE_PROJECT_DIR/hello_moon.md. Invoke the hidden `rostrum-hello-moon-phase` skill in forked context, write the content exactly without adding framing, then finish the playbook.'
     ;;
 esac
