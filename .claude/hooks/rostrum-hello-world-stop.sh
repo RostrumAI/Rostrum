@@ -78,14 +78,14 @@ case "$PHASE" in
       exit 0
     fi
 
-    block 'The Rostrum hello-world sample is not done yet. Run `.claude/bin/rostrum-hello-world-state.sh next hello_moon`, then immediately delegate to the `rostrum-hello-moon` subagent to create hello_moon.md and finish the playbook.'
+    block 'The Rostrum hello-world sample is not done yet. Run `.claude/bin/rostrum-hello-world-state.sh next hello_moon` if needed, then immediately invoke the hidden `rostrum-hello-moon` skill. Do not mark the playbook complete from the outer skill.'
     ;;
   hello_moon)
     if [[ ! -f "$HELLO_MOON_FILE" ]]; then
-      block 'The Rostrum hello-world sample is waiting on phase two. Delegate now to the `rostrum-hello-moon` subagent. That subagent must create hello_moon.md and then run `.claude/bin/rostrum-hello-world-state.sh finish`.'
+      block 'The Rostrum hello-world sample is waiting on phase two. Invoke the hidden `rostrum-hello-moon` skill now. That skill must create hello_moon.md and then run `.claude/bin/rostrum-hello-world-state.sh finish`.'
       exit 0
     fi
 
-    block 'hello_moon.md exists, but the playbook has not been marked complete yet. Run `.claude/bin/rostrum-hello-world-state.sh finish` before stopping.'
+    block 'hello_moon.md exists, but the playbook has not been marked complete yet. Re-run the hidden `rostrum-hello-moon` skill or run `.claude/bin/rostrum-hello-world-state.sh finish` if phase two already completed successfully.'
     ;;
 esac

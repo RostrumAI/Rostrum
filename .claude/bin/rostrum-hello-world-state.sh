@@ -5,6 +5,8 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 STATE_DIR="$PROJECT_DIR/.claude/state"
 STATE_FILE="$STATE_DIR/rostrum-hello-world.json"
+HELLO_WORLD_FILE="$PROJECT_DIR/hello_world.md"
+HELLO_MOON_FILE="$PROJECT_DIR/hello_moon.md"
 
 command="${1:-status}"
 next_phase="${2:-}"
@@ -35,6 +37,9 @@ PY
 }
 
 case "$command" in
+  prepare)
+    rm -f "$HELLO_WORLD_FILE" "$HELLO_MOON_FILE" "$STATE_FILE"
+    ;;
   start)
     write_state "active" "hello_world"
     ;;
