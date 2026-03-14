@@ -1,5 +1,17 @@
 {
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/rostrum-hello-world-prompt-submit.sh",
+            "timeout": 10,
+            "statusMessage": "Checking Rostrum hello-world prompt state"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [

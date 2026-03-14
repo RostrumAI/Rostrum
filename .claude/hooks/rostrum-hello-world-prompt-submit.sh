@@ -4,8 +4,6 @@ set -euo pipefail
 
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 STATE_SCRIPT="$PROJECT_DIR/.claude/bin/rostrum-hello-world-state.sh"
-HELLO_WORLD_FILE="$PROJECT_DIR/hello_world.md"
-HELLO_MOON_FILE="$PROJECT_DIR/hello_moon.md"
 INPUT="$(cat)"
 
 json_field() {
@@ -34,23 +32,22 @@ PY
   fi
 }
 
-block() {
-  local reason="$1"
-  python3 - "$reason" <<'PY'
+emit_context() {
+  local context="$1"
+  python3 - "$context" <<'PY'
 import json
 import sys
 
-print(json.dumps({"decision": "block", "reason": sys.argv[1]}))
+print(json.dumps({
+    "hookSpecificOutput": {
+        "hookEventName": "UserPromptSubmit",
+        "additionalContext": sys.argv[1],
+    }
+}))
 PY
 }
 
 if [[ ! -x "$STATE_SCRIPT" ]]; then
-  exit 0
-fi
-
-STOP_HOOK_ACTIVE="$(json_field '.stop_hook_active')"
-SUBAGENT_STOP_HOOK_ACTIVE="$(json_field '.subagent_stop_hook_active')"
-if [[ "$STOP_HOOK_ACTIVE" == "true" || "$SUBAGENT_STOP_HOOK_ACTIVE" == "true" ]]; then
   exit 0
 fi
 
@@ -67,29 +64,23 @@ else
   PHASE="$(printf '%s' "$STATE_JSON" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("phase",""))')"
 fi
 
-if [[ "$STATUS" == "awaiting_user" ]]; then
+if [[ "$STATUS" != "awaiting_user" ]]; then
   exit 0
 fi
 
-if [[ "$STATUS" != "active" ]]; then
+USER_PROMPT="$(json_field '.prompt')"
+if [[ -z "$USER_PROMPT" ]]; then
+  USER_PROMPT="$(json_field '.user_prompt')"
+fi
+if [[ -z "$USER_PROMPT" ]]; then
   exit 0
 fi
 
 case "$PHASE" in
   hello_world)
-    if [[ ! -f "$HELLO_WORLD_FILE" ]]; then
-      block 'The Rostrum hello-world sample is still active. Move it into `awaiting_user hello_world` or write hello_world.md before stopping.'
-      exit 0
-    fi
-
-    block 'The Rostrum hello-world sample is not done yet. Advance into `hello_moon` and invoke the hidden `rostrum-hello-moon` skill before stopping.'
+    emit_context 'Rostrum hello-world is waiting for user-provided file content. Treat the user'"'"'s just-submitted prompt as the exact Markdown content for hello_world.md. Invoke the hidden `rostrum-hello-world-phase` skill in forked context, write the content exactly without adding framing, then advance the playbook into the hello_moon phase.'
     ;;
   hello_moon)
-    if [[ ! -f "$HELLO_MOON_FILE" ]]; then
-      block 'The Rostrum hello-world sample is waiting on phase two. Invoke the hidden `rostrum-hello-moon` skill now so it can request or write hello_moon.md and then finish the playbook.'
-      exit 0
-    fi
-
-    block 'hello_moon.md exists, but the playbook has not been marked complete yet. Re-run the hidden `rostrum-hello-moon` skill or run `.claude/bin/rostrum-hello-world-state.sh finish` if phase two already completed successfully.'
+    emit_context 'Rostrum hello-world is waiting for user-provided file content. Treat the user'"'"'s just-submitted prompt as the exact Markdown content for hello_moon.md. Invoke the hidden `rostrum-hello-moon` skill in forked context, write the content exactly without adding framing, then finish the playbook.'
     ;;
 esac

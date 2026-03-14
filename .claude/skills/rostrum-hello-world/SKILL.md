@@ -12,15 +12,7 @@ Execution contract:
 
 1. Use the Bash tool to run `.claude/bin/rostrum-hello-world-state.sh prepare`.
 2. Use the Bash tool to run `.claude/bin/rostrum-hello-world-state.sh start`.
-3. Use the Bash tool to create `hello_world.md` in the repository root with exactly this content:
-
-   ```markdown
-   # Hello World
-
-   Phase one of the Rostrum hello-world playbook completed successfully.
-   ```
-
-4. Use the Bash tool to run `.claude/bin/rostrum-hello-world-state.sh next hello_moon`.
-5. Immediately invoke the hidden `rostrum-hello-moon` skill so phase two runs automatically in its own forked context.
-6. Do not mark the playbook complete yourself. The hidden phase owns completion.
-7. After the hidden phase returns, give the user a brief success summary.
+3. Use the Bash tool to run `.claude/bin/rostrum-hello-world-state.sh await-user hello_world`.
+4. Ask the user what exact Markdown content should be written into `hello_world.md`.
+5. Tell the user to reply with the exact file content in their next message.
+6. Stop after the request. Do not create either file yourself.

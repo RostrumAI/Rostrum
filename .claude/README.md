@@ -9,8 +9,10 @@ Files:
 
 - `.claude/settings.json`
 - `.claude/skills/rostrum-hello-world/SKILL.md`
+- `.claude/skills/rostrum-hello-world-phase/SKILL.md`
 - `.claude/skills/rostrum-hello-moon/SKILL.md`
 - `.claude/bin/rostrum-hello-world-state.sh`
+- `.claude/hooks/rostrum-hello-world-prompt-submit.sh`
 - `.claude/hooks/rostrum-hello-world-stop.sh`
 - `.claude/hooks/clear-on-stop.sh`
 - `.claude/hooks/clear-on-stop.log`
@@ -20,8 +22,10 @@ Files:
 The active sample demonstrates a two-phase Rostrum-style playbook using:
 
 - a user-invoked skill: `/rostrum-hello-world`
+- a hidden Claude-only phase-one writer: `rostrum-hello-world-phase`
 - a hidden Claude-only skill: `rostrum-hello-moon`
 - a local state file in `.claude/state/rostrum-hello-world.json`
+- a `UserPromptSubmit` hook that injects resume instructions when the playbook is waiting on the user's content
 - `Stop` and `SubagentStop` hooks that block until phase two finishes
 - `context: fork` on both skills so each phase runs in isolated context
 
@@ -29,12 +33,13 @@ Expected flow:
 
 1. The user runs `/rostrum-hello-world`.
 2. The skill resets stale sample artifacts, starts the local state machine,
-   creates `hello_world.md`, and advances the local state to `hello_moon`.
-3. The outer skill immediately invokes the hidden `rostrum-hello-moon` skill.
-4. The hidden skill creates `hello_moon.md`, marks the state complete, and returns.
-5. If Claude tries to stop early, the stop hook blocks and points it back to the
-   hidden skill.
-6. The next stop is allowed because the playbook is finished.
+   moves the playbook into `awaiting_user hello_world`, and asks the user what to write.
+3. When the user replies, the `UserPromptSubmit` hook injects resume context so Claude knows the prompt text is exact file content for `hello_world.md`.
+4. Claude invokes the hidden `rostrum-hello-world-phase` skill, writes `hello_world.md`, advances to `hello_moon`, and invokes the hidden `rostrum-hello-moon` skill.
+5. The hidden moon skill moves the playbook into `awaiting_user hello_moon` and asks the user what to write.
+6. When the user replies again, the `UserPromptSubmit` hook injects resume context for `hello_moon.md`.
+7. Claude invokes the hidden `rostrum-hello-moon` skill again, writes `hello_moon.md`, and marks the playbook complete.
+8. If Claude tries to stop during an active phase, the stop hook blocks. If the playbook is waiting on the user, stopping is allowed.
 
 The generated files are ignored by git:
 
@@ -55,9 +60,11 @@ That script is no longer wired into `.claude/settings.json`.
 1. Start Claude Code in this repository.
 2. Run `/rostrum-hello-world`.
 3. Confirm that the skill starts from a clean slate even if the sample files already existed.
-4. Confirm that `hello_world.md` appears first.
-5. Confirm that Claude automatically continues into the hidden `rostrum-hello-moon` skill.
-6. Confirm that `hello_moon.md` appears and the final stop is allowed.
+4. Confirm that Claude pauses and asks what to write into `hello_world.md`.
+5. Reply with exact Markdown content for `hello_world.md`.
+6. Confirm that `hello_world.md` appears and Claude then pauses again for `hello_moon.md`.
+7. Reply with exact Markdown content for `hello_moon.md`.
+8. Confirm that `hello_moon.md` appears and the final stop is allowed.
 
 ## Relevant Claude docs
 

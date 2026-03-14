@@ -43,6 +43,13 @@ case "$command" in
   start)
     write_state "active" "hello_world"
     ;;
+  await-user)
+    if [[ -z "$next_phase" ]]; then
+      echo "usage: $0 await-user <phase>" >&2
+      exit 1
+    fi
+    write_state "awaiting_user" "$next_phase"
+    ;;
   next)
     if [[ -z "$next_phase" ]]; then
       echo "usage: $0 next <phase>" >&2
