@@ -29,7 +29,7 @@ This is not a non-support case. It is a lower-guarantee adapter.
 
 Preferred start trigger: a user-visible command like `/rostrum:review`.
 
-Flow:
+Playbook start:
 
 1. User triggers the review starter.
 2. Adapter calls `rostrum start review-loop --client codex-cli`.
@@ -148,4 +148,4 @@ sequenceDiagram
 
 - Launch with clear labeling that Codex CLI is `cooperative`, not `managed`.
 - The adapter should bias toward explicit operator visibility over pretending to have enforcement that it does not actually have.
-- If stronger lifecycle controls appear later, the support tier can be upgraded without changing the core flow model.
+- If stronger lifecycle controls appear later, the support tier can be upgraded without changing the core playbook model.

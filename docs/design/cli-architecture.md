@@ -4,8 +4,8 @@
 
 The Rostrum CLI is the local control plane for portable agent workflows. It has four jobs:
 
-1. Author flows.
-2. Install and initialize flows.
+1. Author playbooks.
+2. Install and initialize playbooks.
 3. Orchestrate ordered multi-phase runs.
 4. Bridge local workspaces to client-specific adapters and the hosted Rostrum control plane.
 
@@ -21,8 +21,8 @@ The CLI does not own the agent session UI. It owns run state and exposes command
 
 ## Primary nouns
 
-- `Flow`: a versioned workflow package.
-- `Run`: one execution of a flow against a workspace.
+- `Playbook`: a versioned workflow package.
+- `Run`: one execution of a playbook against a workspace.
 - `Phase`: an ordered or graph-linked step within a run.
 - `Adapter`: the client-specific bridge used to inject context and receive completion signals.
 - `Session`: the live client conversation or process associated with a run.
@@ -32,10 +32,10 @@ The CLI does not own the agent session UI. It owns run state and exposes command
 
 ### Authoring
 
-- `rostrum create flow`
-  - Scaffold a new flow package with manifest, prompts, templates, and tests.
+- `rostrum create playbook`
+  - Scaffold a new playbook package with manifest, prompts, templates, and tests.
 - `rostrum create adapter`
-  - Scaffold client-specific adapter bindings for a flow when the generic mapping is insufficient.
+  - Scaffold client-specific adapter bindings for a playbook when the generic mapping is insufficient.
 - `rostrum validate`
   - Validate manifest schema, prompt references, setup actions, and adapter mappings.
 - `rostrum pack`
@@ -45,10 +45,10 @@ The CLI does not own the agent session UI. It owns run state and exposes command
 
 ### Installation and workspace init
 
-- `rostrum install <publisher>/<flow>`
-  - Download a flow artifact from the marketplace or another registry.
-- `rostrum init <publisher>/<flow>`
-  - Bind an installed flow to the current workspace, prompt for required setup, and create local config.
+- `rostrum install <publisher>/<playbook>`
+  - Download a playbook artifact from the marketplace or another registry.
+- `rostrum init <publisher>/<playbook>`
+  - Bind an installed playbook to the current workspace, prompt for required setup, and create local config.
 - `rostrum setup plan`
   - Show pending setup actions and required approvals before anything executes.
 - `rostrum setup apply`
@@ -58,7 +58,7 @@ The CLI does not own the agent session UI. It owns run state and exposes command
 
 ### Run orchestration
 
-- `rostrum start <flow>`
+- `rostrum start <playbook>`
   - Create a run, select adapter, resolve workspace bindings, and emit the first phase payload.
 - `rostrum next`
   - Return the current or next actionable phase payload for a given run and client session.
@@ -80,7 +80,7 @@ The CLI does not own the agent session UI. It owns run state and exposes command
 - `rostrum search`
   - Search local and remote registries.
 - `rostrum update`
-  - Update installed flow artifacts and surface any new setup or permission changes.
+  - Update installed playbook artifacts and surface any new setup or permission changes.
 - `rostrum yank`
   - Remove a published version from install resolution while keeping audit history.
 
@@ -92,8 +92,8 @@ Rostrum should follow XDG-style paths on Unix-like systems and equivalent platfo
 
 - `~/.config/rostrum/config.toml`
   - Auth, registry configuration, default client, output preferences.
-- `~/.local/share/rostrum/flows/<publisher>/<flow>/<version>/`
-  - Installed flow artifacts and unpacked assets.
+- `~/.local/share/rostrum/playbooks/<publisher>/<playbook>/<version>/`
+  - Installed playbook artifacts and unpacked assets.
 - `~/.local/state/rostrum/runs/<run-id>/`
   - Durable run state, session bindings, phase receipts, and adapter overlays.
 - `~/.cache/rostrum/`
@@ -102,7 +102,7 @@ Rostrum should follow XDG-style paths on Unix-like systems and equivalent platfo
 ### Workspace-level state
 
 - `<workspace>/.rostrum/workspace.toml`
-  - Flow bindings, chosen client, workspace-specific overrides.
+  - Playbook bindings, chosen client, workspace-specific overrides.
 - `<workspace>/.rostrum/runs/<run-id>.json`
   - Optional pointer file for easy repo-local discovery of active runs.
 
@@ -131,8 +131,8 @@ Each run directory stores normalized state plus adapter-specific overlays:
 Canonical run metadata:
 
 - `run_id`
-- `flow_id`
-- `flow_version`
+- `playbook_id`
+- `playbook_version`
 - `workspace_root`
 - `adapter_id`
 - `support_tier`
@@ -263,7 +263,7 @@ Rules:
 
 - The adapter must be bound to the run.
 - The phase must match the run's current phase.
-- Advancement can be blocked by validation rules in the flow spec.
+- Advancement can be blocked by validation rules in the playbook spec.
 - Rostrum writes a phase receipt and updates `run.json` and `next.json`.
 
 ## Hosted sync model
@@ -278,11 +278,11 @@ This lets offline local execution continue without losing determinism.
 
 ## Authoring workflow
 
-`rostrum create flow` should produce:
+`rostrum create playbook` should produce:
 
 ```text
-my-review-flow/
-  rostrum.flow.toml
+my-review-playbook/
+  rostrum.playbook.toml
   prompts/
     010-review.md
     020-fix.md
@@ -294,20 +294,20 @@ my-review-flow/
 
 The scaffolder should ask for:
 
-- flow name and slug
+- playbook name and slug
 - supported clients
 - ordered phase count
-- whether the flow is local-only or marketplace-bound
+- whether the playbook is local-only or marketplace-bound
 - whether setup includes binaries or config patches
 
 ## Initialization workflow
 
-`rostrum init <publisher>/<flow>` should:
+`rostrum init <publisher>/<playbook>` should:
 
 1. Resolve the artifact.
 2. Show setup plan and requested permissions.
 3. Verify signatures and provenance.
-4. Install the artifact into user-level flow storage.
+4. Install the artifact into user-level playbook storage.
 5. Write workspace binding to `.rostrum/workspace.toml`.
 6. Register client adapter hooks, commands, or extension assets when approved.
 
@@ -318,7 +318,7 @@ Expected failure modes:
 - session lost while run is active
 - client adapter cannot inject next payload
 - required setup receipt missing
-- flow version changed during active run
+- playbook version changed during active run
 - hosted sync conflict
 
 CLI response rules:
@@ -330,5 +330,5 @@ CLI response rules:
 ## Non-goals
 
 - Simulating arbitrary TUI behavior as the primary integration path
-- Letting flows mutate run state directly
+- Letting playbooks mutate run state directly
 - Treating all clients as equally enforceable

@@ -20,9 +20,9 @@ Pi support should exist to validate the adapter model and to keep the path open 
 
 Preferred trigger: installed extension command for `/rostrum:review`.
 
-Flow:
+Playbook start:
 
-1. User starts the review flow from the Pi command surface.
+1. User starts the review playbook from the Pi command surface.
 2. Extension or RPC bridge calls `rostrum start review-loop --client pi-coding-agent`.
 3. Rostrum returns a run ID and first phase payload.
 4. Extension injects the phase into the active Pi session.
@@ -132,5 +132,5 @@ sequenceDiagram
 ## Implementation notes
 
 - Keep this adapter behind an experimental flag at first release.
-- Use it to validate how much of the universal flow model can survive in less mature client surfaces.
+- Use it to validate how much of the universal playbook model can survive in less mature client surfaces.
 - If Pi stabilizes, it can graduate to `cooperative` or better without changing the core Rostrum contracts.

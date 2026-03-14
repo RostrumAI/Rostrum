@@ -1,8 +1,8 @@
-# Rostrum Flow Package Specification
+# Rostrum Playbook Package Specification
 
 ## Purpose
 
-A Rostrum `Flow` is a portable package that describes reusable agent workflows across multiple clients while leaving session control to client adapters.
+A Rostrum `Playbook` is a portable package that describes reusable agent workflows across multiple clients while leaving session control to client adapters.
 
 The package format must make these concerns explicit:
 
@@ -16,8 +16,8 @@ The package format must make these concerns explicit:
 ## Package structure
 
 ```text
-review-flow/
-  rostrum.flow.toml
+review-playbook/
+  rostrum.playbook.toml
   prompts/
     010-review.md
     020-fix-findings.md
@@ -34,11 +34,11 @@ review-flow/
   docs/
 ```
 
-`rostrum.flow.toml` is required. Everything else is optional unless referenced by the manifest.
+`rostrum.playbook.toml` is required. Everything else is optional unless referenced by the manifest.
 
 ## Manifest sections
 
-### `[flow]`
+### `[playbook]`
 
 Identity and packaging metadata:
 
@@ -65,7 +65,7 @@ Registry-facing metadata:
 
 ### `[requirements]`
 
-Flow requirements that Rostrum must validate before a run starts:
+Playbook requirements that Rostrum must validate before a run starts:
 
 - binaries
 - minimum client versions
@@ -114,7 +114,7 @@ Each phase defines:
 
 ### `[state]`
 
-Flow-level rules for run ownership:
+Playbook-level rules for run ownership:
 
 - `owner = "rostrum"`
 - `phase_pointer = "central"`
@@ -136,7 +136,7 @@ Default adapter mapping for a supported client:
 ## Example manifest
 
 ```toml
-[flow]
+[playbook]
 id = "rostrum.review-loop"
 version = "0.1.0"
 title = "Review, Fix, Review Again"
@@ -241,14 +241,14 @@ requires_custom_extension = true
 
 ## Phase model
 
-Flows should support both linear and graph-linked progression, but launch should optimize for ordered phases.
+Playbooks should support both linear and graph-linked progression, but launch should optimize for ordered phases.
 
 Rules:
 
 - every phase has a stable ID
 - phase transitions are explicit
 - completion is tool-driven whenever possible
-- flow authors can define validation gates between phases
+- playbook authors can define validation gates between phases
 
 ## Adapter bindings
 
@@ -270,20 +270,20 @@ Forbidden adapter-specific configuration:
 
 ## Setup model
 
-Setup actions are package data, not free-form code. A flow can request one of three security levels:
+Setup actions are package data, not free-form code. A playbook can request one of three security levels:
 
 - `declarative-only`
   - typed actions only
 - `verified-script`
   - scripts allowed only if signed, hashed, and reviewed by Rostrum
 - `unsafe-local`
-  - local unpublished development flows only
+  - local unpublished development playbooks only
 
 Marketplace distribution should reject `unsafe-local`.
 
-## Flow creation UX
+## Playbook Creation UX
 
-`rostrum create flow` should:
+`rostrum create playbook` should:
 
 1. Ask for workflow name, summary, and client list.
 2. Generate a linear or graph template.
@@ -291,7 +291,7 @@ Marketplace distribution should reject `unsafe-local`.
 4. Ask whether setup actions are required.
 5. Offer marketplace metadata scaffolding.
 
-`rostrum create flow --from review-loop` should create a minimal starter with:
+`rostrum create playbook --from review-loop` should create a minimal starter with:
 
 - three phases
 - example review prompt structure
@@ -313,7 +313,7 @@ Marketplace distribution should reject `unsafe-local`.
 
 `rostrum pack` produces:
 
-- flow artifact tarball
+- playbook artifact tarball
 - manifest digest
 - signature bundle
 - optional provenance statement

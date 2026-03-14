@@ -10,7 +10,7 @@ The install model must feel closer to a package manager plus permissioned setup 
 
 ### Author side
 
-1. Author creates a flow package.
+1. Author creates a playbook package.
 2. `rostrum validate` checks manifest and setup declarations.
 3. `rostrum pack` builds a signed artifact.
 4. `rostrum publish` uploads:
@@ -30,7 +30,7 @@ The install model must feel closer to a package manager plus permissioned setup 
 4. Rostrum shows a setup plan.
 5. User approves or rejects each required setup action.
 6. Rostrum applies approved actions and records receipts.
-7. User runs `rostrum init` to bind the flow to a workspace.
+7. User runs `rostrum init` to bind the playbook to a workspace.
 
 ## Artifact trust model
 
@@ -60,7 +60,7 @@ Trust levels:
 
 The key rule is:
 
-`Downloading a flow is safe by default. Executing setup requires explicit, typed approval.`
+`Downloading a playbook is safe by default. Executing setup requires explicit, typed approval.`
 
 That implies:
 
@@ -96,7 +96,7 @@ Preferred setup actions are narrow and inspectable:
 Example:
 
 ```text
-Flow: rostrum/review-loop@0.1.0
+Playbook: rostrum/review-loop@0.1.0
 
 Pending actions:
 1. Install npm package `playwright-cli`
@@ -158,7 +158,7 @@ Marketplace packages may include `verified-script` actions only if all of the fo
 
 ### Local development escape hatch
 
-Unpublished local flows may use `unsafe-local` actions for rapid iteration, but:
+Unpublished local playbooks may use `unsafe-local` actions for rapid iteration, but:
 
 - they cannot be published
 - receipts are marked untrusted
@@ -166,30 +166,30 @@ Unpublished local flows may use `unsafe-local` actions for rapid iteration, but:
 
 ## Workspace initialization
 
-`rostrum init` should not just install the flow. It should bind it to a workspace.
+`rostrum init` should not just install the playbook. It should bind it to a workspace.
 
 Initialization responsibilities:
 
 - write `.rostrum/workspace.toml`
 - apply workspace-scoped setup actions
 - register client entrypoints for the selected adapter
-- ask whether the sample flow should become the default project workflow
+- ask whether the sample playbook should become the default project workflow
 
 Example workspace binding:
 
 ```toml
 [workspace]
 root = "/repo"
-default_flow = "rostrum.review-loop"
+default_playbook = "rostrum.review-loop"
 default_client = "claude-code"
 
-[flows."rostrum.review-loop"]
+[playbooks."rostrum.review-loop"]
 version = "0.1.0"
 installed_digest = "sha256:..."
 setup_profile = "default"
 ```
 
-## Publishing flow
+## Publishing Playbook
 
 `rostrum publish` should require:
 
@@ -208,7 +208,7 @@ Registry-side checks:
 - forbidden action rejection
 - support tier linting
 
-## Download and install flow
+## Download and Install Playbook
 
 Recommended command sequence:
 
@@ -231,9 +231,9 @@ This still must show the setup plan before execution.
 
 Minimum registry endpoints:
 
-- `GET /flows`
-- `GET /flows/:publisher/:slug`
-- `GET /flows/:publisher/:slug/:version`
+- `GET /playbooks`
+- `GET /playbooks/:publisher/:slug`
+- `GET /playbooks/:publisher/:slug/:version`
 - `GET /artifacts/:digest`
 - `POST /publish`
 - `POST /signatures/verify`
@@ -252,7 +252,7 @@ Marketplace UX should surface:
 - publisher verification
 - community usage and issue rate
 
-This matters because a "review loop" flow that only needs prompt files should not look equally risky to a flow that wants to install binaries and patch multiple configs.
+This matters because a "review loop" playbook that only needs prompt files should not look equally risky to a playbook that wants to install binaries and patch multiple configs.
 
 ## Recommendation
 

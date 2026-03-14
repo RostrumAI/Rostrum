@@ -4,8 +4,8 @@ Initial design docs live in [docs/design](./docs/design/README.md).
 
 Current scope:
 
-- CLI architecture for authoring, installing, initializing, and orchestrating flows
-- flow package specification
+- CLI architecture for authoring, installing, initializing, and orchestrating playbooks
+- playbook package specification
 - marketplace install and security model
 - per-client adapter designs for:
   - Claude Code

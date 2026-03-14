@@ -16,7 +16,7 @@ Claude Code should feel like the reference Rostrum experience:
 ## Adapter components
 
 1. `rostrum-control` MCP server
-   - exposes `rostrum_start_flow`, `rostrum_next`, `rostrum_complete_phase`, `rostrum_abort_flow`, `rostrum_status`
+   - exposes `rostrum_start_playbook`, `rostrum_next`, `rostrum_complete_phase`, `rostrum_abort_playbook`, `rostrum_status`
 2. Claude Code command package
    - installs `/rostrum:review`
 3. Claude Code hook bundle
@@ -28,7 +28,7 @@ Claude Code should feel like the reference Rostrum experience:
 
 The preferred start trigger is `/rostrum:review`.
 
-Flow:
+Playbook start:
 
 1. User enters `/rostrum:review`.
 2. Claude command calls `rostrum start review-loop --client claude-code`.

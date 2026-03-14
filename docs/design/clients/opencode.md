@@ -28,7 +28,7 @@ OpenCode should be the cleanest "Rostrum beside the session" implementation:
 
 Preferred trigger: adapter command that starts the run against the current OpenCode session.
 
-Flow:
+Playbook start:
 
 1. User triggers the review command.
 2. Bridge discovers the active OpenCode session.
@@ -72,7 +72,7 @@ Because the bridge owns event correlation, it can mark delivery as:
 
 Primary completion mode: explicit MCP tool call.
 
-OpenCode agent flow:
+OpenCode agent playbook run:
 
 1. Agent works inside the current session.
 2. Agent calls `rostrum_complete_phase`.

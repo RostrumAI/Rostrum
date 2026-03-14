@@ -5,7 +5,7 @@ This directory defines the initial Rostrum product architecture for workflow pac
 ## Reading order
 
 1. [CLI Architecture](./cli-architecture.md)
-2. [Flow Package Specification](./flow-package-spec.md)
+2. [Playbook Package Specification](./playbook-package-spec.md)
 3. [Marketplace, Install, and Security](./marketplace-install-security.md)
 4. Client adapters:
    - [Claude Code](./clients/claude-code.md)
@@ -17,7 +17,7 @@ This directory defines the initial Rostrum product architecture for workflow pac
 ## Core decisions
 
 - Rostrum owns workflow state.
-- A `Flow` is portable, but execution is adapter-specific.
+- A `Playbook` is portable, but execution is adapter-specific.
 - Clients are execution surfaces, not sources of truth.
 - Support quality is explicit:
   - `managed`

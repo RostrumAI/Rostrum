@@ -27,7 +27,7 @@ Gemini CLI should deliver a first-class workflow experience close to Claude Code
 
 Preferred start trigger: extension command or slash command equivalent for `/rostrum:review`.
 
-Flow:
+Playbook start:
 
 1. User invokes the Rostrum review command.
 2. Extension starts a run through `rostrum start`.
